@@ -35,12 +35,12 @@ export function getVisibleProducts(userId: number, query: string) {
   let visibleProducts = productWithCategory;
 
   if (userId > 0) {
-    visibleProducts = productWithCategory
+    visibleProducts = visibleProducts
       .filter(product => product.category?.ownerId === userId);
   }
 
   if (query.length) {
-    visibleProducts = productWithCategory
+    visibleProducts = visibleProducts
       .filter(
         product => product.name.toLowerCase().includes(query.toLowerCase()),
       );
