@@ -31,7 +31,11 @@ const productWithCategory: ProductWithCategory[] = productsFromServer
     category: getCategoryById(product.categoryId),
   }));
 
-export function getVisibleProducts(userId: number, query: string) {
+export function getVisibleProducts(
+  userId: number,
+  query: string,
+  categoryId: number,
+) {
   let visibleProducts = productWithCategory;
 
   if (userId > 0) {
@@ -46,18 +50,25 @@ export function getVisibleProducts(userId: number, query: string) {
       );
   }
 
+  if (categoryId > 0) {
+    visibleProducts = visibleProducts
+      .filter(product => product.categoryId === categoryId);
+  }
+
   return visibleProducts;
 }
 
 export const App: React.FC = () => {
   const [userId, setUserId] = useState(0);
   const [query, setQuery] = useState('');
+  const [categoryId, setCategoryId] = useState(0);
 
-  const visibleProducts = getVisibleProducts(userId, query);
+  const visibleProducts = getVisibleProducts(userId, query, categoryId);
 
   const handleResetAllFilters = () => {
     setUserId(0);
     setQuery('');
+    setCategoryId(0);
   };
 
   return (
@@ -126,40 +137,26 @@ export const App: React.FC = () => {
                 href="#/"
                 data-cy="AllCategories"
                 className="button is-success mr-6 is-outlined"
+                onClick={() => setCategoryId(0)}
               >
                 All
               </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
+              {categoriesFromServer.map(category => (
+                <a
+                  key={category.id}
+                  data-cy="Category"
+                  className={classNames(
+                    'button mr-2 my-1',
+                    {
+                      'is-info': category.id === categoryId,
+                    },
+                  )}
+                  onClick={() => setCategoryId(category.id)}
+                  href="#/"
+                >
+                  {category.title}
+                </a>
+              ))}
             </div>
 
             <div className="panel-block">
